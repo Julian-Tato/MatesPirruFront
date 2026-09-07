@@ -4,11 +4,10 @@ import PageHeader from "../components/catalogo/PageHeader";
 import FilterBar from "../components/catalogo/FilterBar";
 import ProductGrid from "../components/catalogo/ProductGrid";
 
-const CATEGORIAS = ["Todos", "Mates", "Accesorios", "Yerbas", "Sets"];
-
 export default function CatalogoPage({ esAdmin = false }) {
   const {
     productos,
+    categorias,
     loading,
     error,
     categoriaActiva,
@@ -24,7 +23,7 @@ export default function CatalogoPage({ esAdmin = false }) {
       <Navbar />
       <PageHeader cantidad={productos.length} />
       <FilterBar
-        categorias={CATEGORIAS}
+        categorias={categorias}
         categoriaActiva={categoriaActiva}
         onCategoriaChange={setCategoriaActiva}
         busqueda={busqueda}

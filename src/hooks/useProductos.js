@@ -1,6 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { obtenerProductos } from "../services/productosService";
 
+function normalizarTexto(texto) {
+  return (texto ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+
 export function useProductos() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,15 +39,24 @@ export function useProductos() {
     };
   }, []);
 
-  const productosFiltrados = useMemo(() => {
+  const categorias = useMemo(() => {
+    const unicas = [...new Set(productos.map((p) => p.categoria))].sort();
+    return ["Todos", ...unicas];
+  }, [productos]);
+
+   const productosFiltrados = useMemo(() => {
     let resultado = productos.filter((p) => {
       const matchCategoria =
-        categoriaActiva === "Todos" || p.categoria === categoriaActiva;
-      const matchBusqueda = p.nombre
-        .toLowerCase()
-        .includes(busqueda.toLowerCase());
+        categoriaActiva === "Todos" ||
+        normalizarTexto(p.categoria) === normalizarTexto(categoriaActiva);
+
+      const matchBusqueda =
+        normalizarTexto(p.nombre).includes(normalizarTexto(busqueda)) ||
+        normalizarTexto(p.descripcion).includes(normalizarTexto(busqueda));
+
       return matchCategoria && matchBusqueda;
     });
+
 
     if (orden === "precio_asc") {
       resultado = [...resultado].sort((a, b) => a.precio - b.precio);
@@ -55,6 +73,7 @@ export function useProductos() {
 
   return {
     productos: productosFiltrados,
+    categorias,
     loading,
     error,
     categoriaActiva,
