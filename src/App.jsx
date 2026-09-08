@@ -4,7 +4,7 @@ import CatalogoPage from "./pages/CatalogoPage";
 
 function App() {
   return (
-    <BrowserRouter basename="/Catalogo-web-MatesPirru">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<InicioPage />} />
         <Route path="/catalogo" element={<CatalogoPage />} />
