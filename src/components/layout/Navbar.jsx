@@ -1,12 +1,18 @@
 import { Search, ShoppingBag, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import logoPirru from '@/assets/img/Logo-Matespirru.png';
 
 export default function Navbar() {
   return (
     <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-8 py-4">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">🧉</span>
+      
+      {/* Sección del Logo */}
+      <div className="flex items-center gap-2.5">
+        <img 
+          src={logoPirru} 
+          alt="Mates Pirru Logo" 
+          className="h-8 w-auto object-contain" 
+        />
         <span className="font-serif text-lg font-semibold text-emerald-900">
           Mates Pirru
         </span>
