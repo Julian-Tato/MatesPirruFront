@@ -1,5 +1,6 @@
 import { Search, ShoppingBag, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import logoPirru from '@/assets/img/Logo-Matespirru.png';
 
 export default function Navbar() {
@@ -19,8 +20,8 @@ export default function Navbar() {
       </div>
 
       <nav className="hidden gap-8 text-sm font-medium text-neutral-600 sm:flex">
-        <a href="#" className="hover:text-emerald-800">Inicio</a>
-        <a href="#" className="text-emerald-800">Catálogo</a>
+        <Link to="/" className="hover:text-emerald-800">Inicio</Link>
+        <Link to="/catalogo" className="text-emerald-800">Catálogo</Link>
       </nav>
 
       <div className="flex items-center gap-3">
