@@ -20,7 +20,6 @@ export default function CatalogoPage({ esAdmin = false }) {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Navbar />
       <PageHeader cantidad={productos.length} />
       <FilterBar
         categorias={categorias}

@@ -1,16 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
 import InicioPage from "./pages/InicioPage";
 import CatalogoPage from "./pages/CatalogoPage";
+import LoginPage from "./pages/LoginPage";
+import RegistroPage from "./pages/RegistroPage";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<InicioPage />} />
-        <Route path="/catalogo" element={<CatalogoPage />} />
-      </Routes>
+      {/* Contenedor principal que mantiene el fondo de toda la web */}
+      <div className="min-h-screen bg-neutral-50">
+        
+        {/* El Navbar queda anclado acá y no se recarga */}
+        <Navbar />
+        
+        {/* El main inyecta el contenido de cada página */}
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <Routes>
+            <Route path="/" element={<InicioPage />} />
+            <Route path="/catalogo" element={<CatalogoPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegistroPage />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
   );
 }
-
-export default App;

@@ -25,9 +25,11 @@ export default function Navbar() {
       </nav>
 
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" className="rounded-full">
-          Ingresar
-        </Button>
+        <Link to="/login">
+          <Button variant="outline" size="sm" className="rounded-full">
+            Ingresar
+          </Button>
+        </Link>
         <button
           type="button"
           aria-label="Ver carrito"

@@ -10,7 +10,6 @@ import Footer from '../components/layout/Footer';
 export default function InicioPage() {
   return (
     <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-start">
-      <Navbar />
       <main>
         <BannerPrincipal />
         <MatesDestacados />
