@@ -2,17 +2,16 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-
 export default function ProductCard({ producto, esAdmin, onAgregarCarrito, onEditar, onEliminar }) {
   const pocasUnidades = producto.stock > 0 && producto.stock <= 4;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
-      <div className="relative aspect-square">
+    <div className="group overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl">
+      <div className="relative aspect-square overflow-hidden">
         <img
-          src={producto.imagenUrl}
+          src={producto.urlImagen}
           alt={producto.nombre}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
         <Badge
           className={`absolute left-1.5 top-1.5 border-none px-1.5 py-0 text-[10px] ${
