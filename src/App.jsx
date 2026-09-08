@@ -15,7 +15,7 @@ export default function App() {
         <Navbar />
         
         {/* El main inyecta el contenido de cada página */}
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <main className="w-full">
           <Routes>
             <Route path="/" element={<InicioPage />} />
             <Route path="/catalogo" element={<CatalogoPage />} />
