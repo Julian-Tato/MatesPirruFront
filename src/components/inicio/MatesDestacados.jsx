@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { obtenerProductos } from '@/services/productosService';
 import ProductCard from "@/components/catalogo/ProductCard";
+import { agregarAlCarrito } from "@/lib/utils";
 
 export default function MatesDestacados() {
   const [productos, setProductos] = useState([]);
@@ -22,6 +23,11 @@ export default function MatesDestacados() {
 
     cargarDestacados();
   }, []);
+
+  // Función simplificada usando la librería centralizada
+  const handleAgregarCarrito = (producto) => {
+    agregarAlCarrito(producto);
+  };
 
   if (loading) return null;
 
@@ -45,17 +51,14 @@ export default function MatesDestacados() {
           </Link>
         </div>
 
-        {/* Grilla mapeando  ProductCard */}
+        {/* Grilla mapeando ProductCard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {productos.map((item) => (
             <ProductCard 
               key={item.id || item.idMate} 
               producto={item} 
               esAdmin={false} 
-              onAgregarCarrito={(prod) => {
-                console.log("Agregado al carrito:", prod);
-                // conectar la lógica del carrito de compras
-              }}
+              onAgregarCarrito={handleAgregarCarrito}
             />
           ))}
         </div>

@@ -3,6 +3,7 @@ import Navbar from "../components/layout/Navbar";
 import PageHeader from "../components/catalogo/PageHeader";
 import FilterBar from "../components/catalogo/FilterBar";
 import ProductGrid from "../components/catalogo/ProductGrid";
+import { agregarAlCarrito } from "@/lib/utils";
 
 export default function CatalogoPage({ esAdmin = false }) {
   const {
@@ -18,11 +19,13 @@ export default function CatalogoPage({ esAdmin = false }) {
     setOrden,
   } = useProductos();
 
+  // Función simplificada: delega toda la lógica limpia a la librería utils
+  const handleAgregarCarrito = (producto) => {
+    agregarAlCarrito(producto);
+  };
+
   return (
-    // 1. Contenedor exterior: Ocupa el 100% del ancho (w-full) y aplica el mismo color de fondo de tu Inicio.
     <div className="w-full min-h-screen bg-[#F7F4EE] py-12">
-      
-      {/* 2. Contenedor interior: Centra el contenido y le pone un tope de ancho para que no se deforme en pantallas gigantes. */}
       <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
         
         <PageHeader cantidad={productos.length} />
@@ -51,7 +54,7 @@ export default function CatalogoPage({ esAdmin = false }) {
           <ProductGrid
             productos={productos}
             esAdmin={esAdmin}
-            onAgregarCarrito={(p) => console.log("Agregar al carrito:", p.nombre)}
+            onAgregarCarrito={handleAgregarCarrito}
             onEditar={(p) => console.log("Editar:", p.nombre)}
             onEliminar={(p) => console.log("Eliminar:", p.nombre)}
           />
