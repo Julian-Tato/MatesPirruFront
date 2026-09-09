@@ -1,29 +1,57 @@
-import { Search, ShoppingBag, Pencil, Trash2 } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logoPirru from '@/assets/img/Logo-Matespirru.png';
 
 export default function Navbar() {
   return (
     <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-8 py-4">
       
-      {/* Sección del Logo */}
-      <div className="flex items-center gap-2.5">
-        <img 
-          src={logoPirru} 
-          alt="Mates Pirru Logo" 
-          className="h-8 w-auto object-contain" 
-        />
-        <span className="font-serif text-lg font-semibold text-emerald-900">
-          Mates Pirru
-        </span>
+      {/* Contenedor Izquierdo: Logo y Opciones */}
+      <div className="flex items-center gap-10">
+        <div className="flex items-center">
+          <img 
+            src={logoPirru} 
+            alt="Mates Pirru Logo" 
+            className="h-16 w-16 rounded-full object-cover border border-emerald-900/10 shadow-sm" 
+          />
+        </div>
+
+        <nav className="hidden gap-8 text-base font-medium text-neutral-700 sm:flex">
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => 
+              isActive 
+                ? "text-emerald-800 font-semibold underline underline-offset-4" 
+                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
+            }
+          >
+            Inicio
+          </NavLink>
+          <NavLink 
+            to="/catalogo" 
+            className={({ isActive }) => 
+              isActive 
+                ? "text-emerald-800 font-semibold underline underline-offset-4" 
+                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
+            }
+          >
+            Catálogo
+          </NavLink>
+          <NavLink 
+            to="/opiniones" 
+            className={({ isActive }) => 
+              isActive 
+                ? "text-emerald-800 font-semibold underline underline-offset-4" 
+                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
+            }
+          >
+            Opiniones
+          </NavLink>
+        </nav>
       </div>
 
-      <nav className="hidden gap-8 text-sm font-medium text-neutral-600 sm:flex">
-        <Link to="/" className="hover:text-emerald-800">Inicio</Link>
-        <Link to="/catalogo" className="text-emerald-800">Catálogo</Link>
-      </nav>
-
+      {/* Contenedor Derecho: Ingresar y Carrito */}
       <div className="flex items-center gap-3">
         <Link to="/login">
           <Button variant="outline" size="sm" className="rounded-full">
