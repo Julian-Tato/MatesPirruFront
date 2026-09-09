@@ -7,6 +7,8 @@ import RegistroPage from "./pages/RegistroPage";
 
 export default function App() {
   return (
+    /*<GoogleOAuthProvider clientId="TU_CLIENT_ID_DE_GOOGLE.apps.googleusercontent.com">*/
+      
     <BrowserRouter>
       {/* Contenedor principal que mantiene el fondo de toda la web */}
       <div className="min-h-screen bg-neutral-50">
@@ -15,6 +17,7 @@ export default function App() {
         <Navbar />
         
         {/* El main inyecta el contenido de cada página */}
+        
         <main className="w-full">
           <Routes>
             <Route path="/" element={<InicioPage />} />
@@ -25,5 +28,6 @@ export default function App() {
         </main>
       </div>
     </BrowserRouter>
+    /*</GoogleOAuthProvider>*/
   );
 }
