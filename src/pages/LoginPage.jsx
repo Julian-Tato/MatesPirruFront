@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Reemplazá la URL exacta por el endpoint de tu API de .NET
       const response = await fetch("https://localhost:7045/api/usuarios/login", {
         method: "POST",
         headers: {
@@ -32,7 +32,14 @@ export default function LoginPage() {
       const data = await response.json();
       console.log("¡Usuario conectado!", data);
       
-      // Si sale bien, lo mandamos directo al catálogo/inicio
+      // Guardamos token y datos del usuario para el Navbar y el Carrito
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", JSON.stringify(data));
+        window.dispatchEvent(new CustomEvent("user-logged-in"));
+      }
+      
+      // Si sale bien, lo mandamos directo al inicio
       navigate("/"); 
     } catch (err) {
       setError(err.message);
@@ -42,32 +49,39 @@ export default function LoginPage() {
   };
 
   const manejarGoogleLogin = async (credentialResponse) => {
-  setError("");
-  setLoading(true);
+    setError("");
+    setLoading(true);
 
-  try {
-    const response = await fetch("https://localhost:7045/api/Usuarios/google-login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ tokenId: credentialResponse.credential }),
-    });
+    try {
+      const response = await fetch("https://localhost:7045/api/Usuarios/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tokenId: credentialResponse.credential }),
+      });
 
-    if (!response.ok) {
-      throw new Error("No se pudo iniciar sesión con Google.");
+      if (!response.ok) {
+        throw new Error("No se pudo iniciar sesión con Google.");
+      }
+
+      const data = await response.json();
+      console.log("¡Usuario conectado con Google!", data);
+
+      // Guardamos token y datos del usuario también para Google
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", JSON.stringify(data));
+        window.dispatchEvent(new CustomEvent("user-logged-in"));
+      }
+
+      navigate("/"); 
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const data = await response.json();
-    console.log("¡Usuario conectado con Google!", data);
-
-    navigate("/"); 
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="mx-auto mt-8 max-w-[420px] rounded-xl border border-neutral-200 bg-white p-8 shadow-sm">
@@ -129,8 +143,6 @@ export default function LoginPage() {
           </Button>
         </div>
       </form>
-
-      {/* ... (el resto del código con el botón de Google y el link de registro queda igual) */}
       
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">

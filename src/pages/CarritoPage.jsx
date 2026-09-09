@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { enviarPedido } from "@/services/pedidoService";
-import ItemCart from "@/components/carrito/ItemCart"; // <--- ¡Import vital!
+import ItemCart from "@/components/carrito/ItemCart";
 import CartSummary from "@/components/carrito/CartSummary";
 
 export default function CarritoPage() {
   const navigate = useNavigate();
 
-  // Leemos directamente del localStorage que alimentamos desde el catálogo y home
+  // Leemos directamente del localStorage que alimentamos desde el catálogo e inicio
   const [cartItems, setCartItems] = useState(() => {
     const guardado = localStorage.getItem("mates_pirru_cart");
     return guardado ? JSON.parse(guardado) : [];
@@ -24,7 +24,7 @@ export default function CarritoPage() {
     );
     setCartItems(nuevoCarrito);
     localStorage.setItem("mates_pirru_cart", JSON.stringify(nuevoCarrito));
-    window.dispatchEvent(new CustomEvent("cart-updated")); // Actualiza el Navbar al instante
+    window.dispatchEvent(new CustomEvent("cart-updated"));
   };
 
   const disminuirCantidad = (id) => {
@@ -48,15 +48,12 @@ export default function CarritoPage() {
   const total = subtotal + envio;
 
   const handleCheckout = async () => {
+    // Estructura exacta que espera el CrearPedidoDTO y CrearDetallePedidoDTO en C#
     const ordenData = {
       direccionEnvio: direccion,
-      costoEnvio: envio,
-      montoDescuento: 0,
-      total: total,
       detalles: cartItems.map(item => ({
         idProducto: item.id,
-        cantidad: item.quantity,
-        precioUnitario: item.price
+        cantidad: item.quantity
       }))
     };
 
@@ -64,7 +61,7 @@ export default function CarritoPage() {
 
     try {
       const data = await enviarPedido(ordenData);
-      alert(`¡Compra realizada con éxito! ID de pedido: ${data.pedidoId}`);
+      alert(`¡Compra realizada con éxito! ID de pedido: ${data.pedidoId || data.id}`);
       
       // Limpiamos el carrito tras una compra exitosa
       setCartItems([]);
