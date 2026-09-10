@@ -9,7 +9,7 @@ import Footer from '../components/layout/Footer';
 
 export default function InicioPage() {
   return (
-    <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-start">
+    <div className="w-full bg-transparent">
       <main>
         <BannerPrincipal />
         <MatesDestacados />

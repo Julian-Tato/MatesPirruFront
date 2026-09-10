@@ -6,66 +6,83 @@ export default function ProductCard({ producto, esAdmin, onAgregarCarrito, onEdi
   const pocasUnidades = producto.stock > 0 && producto.stock <= 4;
 
   return (
-    <div className="group overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl">
-      <div className="relative aspect-square overflow-hidden">
-        <img
-          src={producto.urlImagen}
-          alt={producto.nombre}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-        />
-        <Badge
-          className={`absolute left-1.5 top-1.5 border-none px-1.5 py-0 text-[10px] ${
-            pocasUnidades
-              ? "bg-amber-100 text-amber-800"
-              : "bg-white/90 text-emerald-800"
-          }`}
-        >
-          {pocasUnidades ? `Últimas ${producto.stock} u.` : "En stock"}
-        </Badge>
-        <Badge className="absolute right-1.5 top-1.5 border-none bg-neutral-900/80 px-1.5 py-0 text-[10px] text-white">
-          {producto.categoria}
-        </Badge>
-      </div>
+    // Contenedor 'group' para gatillar los efectos de hover en los elementos internos
+    <div className="group relative">
+      
+      {/* 1. El brillo fantasmal que aparece detrás de la tarjeta al hacer hover (Copiado de Figma) */}
+      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-900/50 to-[#d4af37]/20 opacity-0 blur-lg transition duration-500 group-hover:opacity-100" />
+      
+      {/* 2. Tarjeta real: Vidrio esmerilado oscuro con borde sutil */}
+      <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-emerald-900/50 bg-white/5 shadow-sm backdrop-blur-sm transition-all duration-300">
+        
+        <div className="relative aspect-square overflow-hidden">
+          <img
+            src={producto.urlImagen}
+            alt={producto.nombre}
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          />
+          
+          {/* Insignia de Stock (Adaptada al modo oscuro) */}
+          <Badge
+            className={`absolute left-2 top-2 border px-2 py-0.5 text-[10px] uppercase tracking-wider backdrop-blur-md ${
+              pocasUnidades
+                ? "border-amber-700/50 bg-amber-950/80 text-amber-400"
+                : "border-emerald-700/50 bg-emerald-950/80 text-emerald-400"
+            }`}
+          >
+            {pocasUnidades ? `Últimas ${producto.stock} u.` : "En stock"}
+          </Badge>
+          
+          {/* Insignia de Categoría en dorado */}
+          <Badge className="absolute right-2 top-2 border border-[#d4af37]/30 bg-[#0f1711]/90 px-2 py-0.5 text-[10px] text-[#d4af37] backdrop-blur-md">
+            {producto.categoria?.descripcion || producto.categoria}
+          </Badge>
+        </div>
 
-      <div className="space-y-1 p-3">
-        <h3 className="text-sm font-medium text-neutral-900">{producto.nombre}</h3>
-        <p className="line-clamp-2 text-xs text-neutral-500">
-          {producto.descripcion}
-        </p>
+        <div className="flex flex-1 flex-col justify-between space-y-2 p-4">
+          <div>
+            <h3 className="text-base font-semibold tracking-wide text-white" style={{ fontFamily: "var(--font-display)" }}>
+              {producto.nombre}
+            </h3>
+            <p className="line-clamp-2 mt-1 text-xs font-light leading-relaxed text-emerald-200/70">
+              {producto.descripcion}
+            </p>
+          </div>
 
-        <div className="flex items-center justify-between pt-1.5">
-          <span className="text-sm font-semibold text-amber-900">
-            ${producto.precio.toLocaleString("es-AR")}
-          </span>
+          <div className="flex items-center justify-between border-t border-emerald-900/30 pt-3">
+            <span className="text-lg font-bold text-[#d4af37]">
+              ${producto.precio.toLocaleString("es-AR")}
+            </span>
 
-          {esAdmin ? (
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => onEditar?.(producto)}
-                aria-label="Editar producto"
-                className="rounded-full border border-neutral-200 p-1.5 text-neutral-600 hover:bg-neutral-50"
+            {esAdmin ? (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => onEditar?.(producto)}
+                  aria-label="Editar producto"
+                  className="rounded-full border border-emerald-800/50 p-2 text-emerald-400 transition-colors hover:bg-emerald-900/50 hover:text-emerald-300"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onEliminar?.(producto)}
+                  aria-label="Eliminar producto"
+                  className="rounded-full border border-red-900/50 p-2 text-red-400 transition-colors hover:bg-red-950/80 hover:text-red-300"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => onAgregarCarrito?.(producto)}
+                className="h-8 rounded-full bg-emerald-600 px-4 text-xs font-medium text-white shadow-[0_0_10px_rgba(52,211,153,0.1)] transition-all hover:-translate-y-0.5 hover:bg-emerald-500 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)]"
               >
-                <Pencil className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => onEliminar?.(producto)}
-                aria-label="Eliminar producto"
-                className="rounded-full border border-neutral-200 p-1.5 text-red-600 hover:bg-red-50"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ) : (
-            <Button
-              size="sm"
-              onClick={() => onAgregarCarrito?.(producto)}
-              className="h-7 rounded-full bg-emerald-800 px-3 text-xs hover:bg-emerald-900"
-            >
-              + Agregar
-            </Button>
-          )}
+                + Agregar
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

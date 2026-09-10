@@ -1,69 +1,111 @@
 import React from 'react';
-import { Button } from '../ui/button';
-import { Link } from 'react-router-dom';  
-import InsigniasInicio from './InsigniasInicio';
+import { Link } from 'react-router-dom';
 import mateHero from '@/assets/img/IMG_9222.jpeg';
 
 export default function BannerPrincipal() {
   return (
-    <section className="w-full bg-[#F7F4EE] border-b border-stone-200/60 min-h-[88vh] md:min-h-[90vh] py-24 md:py-36 flex items-center">
-      
-      <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center w-full">
-        
-        {/* Columna Izquierda: Textos, Botones e Insignias */}
-        <div className="space-y-6 md:space-y-8">
+    <>
+      <section className="relative flex w-full min-h-[85vh] items-center py-20 z-10">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-2 md:px-12">
           
-          <span className="text-amber-800 text-xs md:text-sm font-bold tracking-widest uppercase bg-white px-4 py-1.5 rounded-full border border-[#F3E5D8] inline-block shadow-sm">
-            + TRADICIÓN ARTESANAL ARGENTINA
-          </span>
-
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 leading-[1.15] tracking-tight mb-4">
-            Si te acompaña MatesPirru <br />
-            <span className="text-[#1b4332]">Elegiste bien</span>
-          </h1>
-
-          <p className="text-stone-600 text-lg md:text-xl leading-relaxed max-w-xl font-normal">
-            Mates artesanales, bombillas y accesorios seleccionados. Calidad que se siente desde el primer mate.
-          </p>
-
-        {/* Botones de Acción */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          {/* Columna Izquierda: Textos y Botones */}
+          <div className="space-y-8">
             
-            {/* 2. Envolvemos el botón con Link apuntando a la ruta del catálogo */}
-            <Link to="/catalogo">
-              <Button className="bg-[#1b4332] hover:bg-[#132e22] text-white px-7 py-6 rounded-xl font-medium text-base shadow-md hover:shadow-lg transition-all cursor-pointer">
-                Ver Catálogo →
-              </Button>
-            </Link>
+            {/* Insignia Botánica */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-800/50 bg-emerald-950/80 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#d4af37] shadow-sm backdrop-blur-sm">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#d4af37]"></span>
+              Nueva Colección Botánica
+            </div>
+            
+            {/* Título Principal (con tipografía display inyectada) */}
+            <h1 className="leading-[1.05] tracking-tight text-white" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.75rem, 6vw, 4.5rem)", fontWeight: 700 }}>
+              El verde profundo<br />
+              <span className="font-light italic text-emerald-400">de nuestras raíces.</span>
+            </h1>
+            
+            {/* Párrafo */}
+            <p className="max-w-md text-lg font-light leading-relaxed text-emerald-200/80">
+              Descubrí una estética inspirada en la selva misionera. Materiales nobles, detalles en bronce y la pureza del mate artesanal.
+            </p>
+            
+            {/* Botones de Acción (Reemplazan a los anteriores pero mantienen el ruteo) */}
+            <div className="flex flex-wrap items-center gap-4 pt-4">
+              <Link
+                to="/catalogo"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-500 hover:shadow-[0_0_20px_rgba(52,211,153,0.3)]"
+              >
+                Explorar Colección →
+              </Link>
+              <Link
+                to="/registro"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-800/60 px-8 py-4 text-sm font-medium text-emerald-100 backdrop-blur-md transition-all duration-300 hover:bg-emerald-900/40"
+              >
+                Unirse al Club
+              </Link>
+            </div>
 
-            <Button variant="outline" className="border-stone-300 bg-white hover:bg-stone-50 text-stone-800 px-7 py-6 rounded-xl font-medium text-base shadow-sm transition-all">
-              Crear cuenta
-            </Button>
+            {/* Estadísticas de Valoración Integradas */}
+            <div className="flex items-center gap-8 border-t border-emerald-900/50 pt-8">
+              <div className="flex flex-col gap-1">
+                <span className="text-2xl font-bold text-white">4.9</span>
+                <span className="text-xs uppercase tracking-wider text-emerald-400">Valoración</span>
+              </div>
+              <div className="h-8 w-px bg-emerald-900/50"></div>
+              <div className="flex flex-col gap-1">
+                <span className="text-2xl font-bold text-white">+10k</span>
+                <span className="text-xs uppercase tracking-wider text-emerald-400">Mates vendidos</span>
+              </div>
+            </div>
           </div>
 
-          <InsigniasInicio />
+          {/* Columna Derecha: Tarjeta Fotográfica con UI flotante */}
+          {/* 1. Agregamos 'group' al contenedor padre para que todo reaccione al unísono */}
+          <div className="relative hidden items-center justify-end md:flex md:pl-6 group cursor-pointer">
+            
+            {/* 2. Halo de luz de neón que aparece detrás de la tarjeta al hacer hover (estilo Figma) */}
+            <div className="absolute right-0 aspect-[4/5] w-full max-w-md rounded-[2rem] bg-gradient-to-r from-emerald-900/60 to-[#d4af37]/30 opacity-0 blur-2xl transition duration-700 group-hover:opacity-100" />
+
+            {/* 3. Contenedor de la foto: Le sumamos hover:-translate-y-2 para que "flote" y más sombra */}
+            <div className="relative z-10 aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2rem] border border-emerald-800/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-700 group-hover:-translate-y-2 group-hover:border-emerald-700/60 group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.8)]">
+              <img
+                src={mateHero}
+                alt="Mate premium en la naturaleza"
+                // 4. Cambiamos hover:scale-105 por group-hover:scale-110
+                className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+              />
+              {/* 5. Agregamos pointer-events-none al degradado para que deje pasar el mouse hacia la foto */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f1711] via-transparent to-transparent" />
+            </div>
+            
+            {/* 6. Tarjeta flotante ("Calabaza Brasileña") - Flota hacia arriba junto con la foto */}
+            <div className="absolute -left-8 bottom-12 z-20 rounded-2xl border border-emerald-800/40 bg-[#1a2e21]/90 px-6 py-4 shadow-2xl backdrop-blur-md transition-transform duration-700 group-hover:-translate-y-2">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-800 bg-emerald-950 text-xl shadow-inner">
+                  🌿
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-emerald-400">Calabaza Brasileña</p>
+                  <p className="font-semibold text-white">Imperial Premium</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+      </section>
 
-        {/* Columna Derecha: Tarjeta con tu foto real y badge flotante más abajo */}
-        <div className="relative flex justify-start md:pl-6 pb-10">
-          
-          {/* Tarjeta contenedora de la imagen */}
-          <div className="relative w-full max-w-sm lg:max-w-[340px] bg-stone-900 rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
-            <img 
-              src={mateHero} 
-              alt="Mate artesanal Mates Pirru" 
-              className="w-full h-[480px] object-cover opacity-95 hover:scale-105 transition-transform duration-700"
-            />
-          </div>
-          
-          {/* Badge flotante con mayor desplazamiento hacia abajo (-bottom-8) */}
-          <div className="absolute -bottom-8 left-2 sm:left-8 bg-white/95 backdrop-blur-md px-6 py-4 rounded-2xl shadow-2xl border border-stone-200/80 flex flex-col z-20">
-            <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Vendidos este mes</span>
-            <span className="text-amber-900 font-serif font-bold text-xl md:text-2xl">+340 mates</span>
-          </div>
-
+      {/* Cinta Inferior (Features Strip) del diseño de Figma */}
+      <div className="relative z-10 border-y border-emerald-900/30 bg-[#0a100b] py-6 overflow-hidden">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-6 text-xs font-medium uppercase tracking-widest text-emerald-600/80 md:gap-12">
+          <span>Hecho a mano</span>
+          <span className="hidden text-emerald-800 md:inline">•</span>
+          <span>Acero Inoxidable Quirúrgico</span>
+          <span className="hidden text-emerald-800 md:inline">•</span>
+          <span>Cuero Crudo Legítimo</span>
+          <span className="hidden text-emerald-800 md:inline">•</span>
+          <span>Envíos a todo el país</span>
         </div>
       </div>
-    </section>
+    </>
   );
 }

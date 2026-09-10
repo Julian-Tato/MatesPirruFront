@@ -60,50 +60,49 @@ export default function Navbar() {
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-8 py-4 shadow-xs">
+    <header className="flex items-center justify-between border-b border-emerald-900/30 bg-[#0f1711]/80 px-8 py-4 shadow-sm backdrop-blur-md sticky top-0 z-50">
       
-      {/* Contenedor Izquierdo: Logo y Opciones (Estilo Footer) */}
+      {/* Contenedor Izquierdo: Logo y Opciones */}
       <div className="flex items-center gap-10">
         
-        {/* Logo con texto incorporado */}
         <Link to="/" className="flex items-center gap-3">
           <img 
             src={logoPirru} 
             alt="Mates Pirru Logo" 
-            className="h-9 w-9 rounded-full object-cover border border-emerald-900/10 shadow-sm" 
+            className="h-9 w-9 rounded-full object-cover border border-emerald-800/40 shadow-[0_0_15px_rgba(52,211,153,0.1)]" 
           />
-          <span className="font-serif font-bold text-emerald-900 text-base">
+          <span className="font-bold text-white text-base tracking-wide" style={{ fontFamily: "var(--font-display)" }}>
             Mates Pirru
           </span>
         </Link>
 
-        {/* Navegación limpia y sutil */}
-        <nav className="hidden gap-6 font-medium text-neutral-500 sm:flex">
-          <Link to="/" className="hover:text-emerald-800 transition-colors">Inicio</Link>
-          <Link to="/catalogo" className="hover:text-emerald-800 transition-colors">Catálogo</Link>
-          <Link to="/opiniones" className="hover:text-emerald-800 transition-colors">Opiniones</Link>
+        {/* Navegación estilo selva */}
+        <nav className="hidden gap-6 font-medium text-emerald-200/80 sm:flex">
+          <Link to="/" className="hover:text-emerald-400 transition-colors">Inicio</Link>
+          <Link to="/catalogo" className="hover:text-emerald-400 transition-colors">Catálogo</Link>
+          <Link to="/opiniones" className="hover:text-emerald-400 transition-colors">Opiniones</Link>
         </nav>
       </div>
 
-      {/* Contenedor Derecho: Dinámico (Login vs Saludo) y Carrito (Intacto) */}
+      {/* Contenedor Derecho: Dinámico (Login vs Saludo) y Carrito */}
       <div className="flex items-center gap-4">
         {usuario ? (
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-neutral-800 bg-neutral-100 px-3 py-1.5 rounded-full">
-              <User className="h-4 w-4 text-emerald-800" />
-              <span>Hola, <strong className="text-emerald-900">{usuario}</strong></span>
+            <div className="flex items-center gap-2 text-sm font-medium text-emerald-100 bg-emerald-950/80 border border-emerald-800/50 px-4 py-1.5 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.05)]">
+              <User className="h-4 w-4 text-[#d4af37]" />
+              <span>Hola, <strong className="text-white font-semibold">{usuario}</strong></span>
             </div>
             <button 
               onClick={handleCerrarSesion}
               title="Cerrar sesión"
-              className="rounded-full border border-neutral-200 p-2 text-neutral-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+              className="rounded-full border border-emerald-900/50 p-2 text-emerald-500 hover:bg-red-950/80 hover:text-red-400 hover:border-red-900/50 transition-all"
             >
               <LogOut className="h-4 w-4" />
             </button>
           </div>
         ) : (
           <Link to="/login">
-            <Button variant="outline" size="sm" className="rounded-full border-neutral-300 hover:bg-neutral-100">
+            <Button variant="outline" size="sm" className="rounded-full border-emerald-800/60 bg-emerald-900/40 hover:bg-emerald-800 text-emerald-100 hover:text-white transition-all backdrop-blur-sm">
               Ingresar
             </Button>
           </Link>
@@ -113,12 +112,12 @@ export default function Navbar() {
         <Link to="/carrito" aria-label="Ver carrito">
           <button
             type="button"
-            className="relative flex items-center justify-center rounded-full border border-neutral-200 p-2.5 text-neutral-700 transition-colors hover:bg-neutral-50"
+            className="relative flex items-center justify-center rounded-full border border-emerald-800/60 bg-emerald-900/20 p-2.5 text-emerald-100 transition-all hover:bg-emerald-800/60 hover:text-white"
           >
             <ShoppingBag className="h-4 w-4" />
             
             {totalItems > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-800 text-[10px] font-bold text-white shadow-xs">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#d4af37] text-[10px] font-bold text-[#0f1711] shadow-[0_0_10px_rgba(212,175,55,0.4)]">
                 {totalItems}
               </span>
             )}
