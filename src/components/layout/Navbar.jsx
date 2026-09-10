@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ShoppingBag, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoPirru from '@/assets/img/Logo-Matespirru.png';
 
 export default function Navbar() {
@@ -9,7 +9,6 @@ export default function Navbar() {
   const [usuario, setUsuario] = useState(null);
   const navigate = useNavigate();
 
-  // Función para chequear si hay usuario logueado
   const verificarSesion = () => {
     const token = localStorage.getItem("token");
     const datosUsuario = localStorage.getItem("usuario");
@@ -17,7 +16,6 @@ export default function Navbar() {
     if (token && datosUsuario) {
       try {
         const parsed = JSON.parse(datosUsuario);
-        // Usamos el nombre que devuelva el backend, o el email si no tiene nombre
         setUsuario(parsed.nombre || parsed.email || "Cliente");
       } catch {
         setUsuario("Cliente");
@@ -64,54 +62,32 @@ export default function Navbar() {
   return (
     <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-8 py-4 shadow-xs">
       
-      {/* Contenedor Izquierdo: Logo y Opciones */}
+      {/* Contenedor Izquierdo: Logo y Opciones (Estilo Footer) */}
       <div className="flex items-center gap-10">
-        <div className="flex items-center">
+        
+        {/* Logo con texto incorporado */}
+        <Link to="/" className="flex items-center gap-3">
           <img 
             src={logoPirru} 
             alt="Mates Pirru Logo" 
-            className="h-14 w-14 rounded-full object-cover border border-emerald-900/10 shadow-sm" 
+            className="h-9 w-9 rounded-full object-cover border border-emerald-900/10 shadow-sm" 
           />
-        </div>
+          <span className="font-serif font-bold text-emerald-900 text-base">
+            Mates Pirru
+          </span>
+        </Link>
 
-        <nav className="hidden gap-8 text-base font-medium text-neutral-700 sm:flex">
-          <NavLink 
-            to="/" 
-            className={({ isActive }) => 
-              isActive 
-                ? "text-emerald-800 font-semibold underline underline-offset-4" 
-                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
-            }
-          >
-            Inicio
-          </NavLink>
-          <NavLink 
-            to="/catalogo" 
-            className={({ isActive }) => 
-              isActive 
-                ? "text-emerald-800 font-semibold underline underline-offset-4" 
-                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
-            }
-          >
-            Catálogo
-          </NavLink>
-          <NavLink 
-            to="/opiniones" 
-            className={({ isActive }) => 
-              isActive 
-                ? "text-emerald-800 font-semibold underline underline-offset-4" 
-                : "hover:text-emerald-900 hover:underline hover:underline-offset-4 transition-all"
-            }
-          >
-            Opiniones
-          </NavLink>
+        {/* Navegación limpia y sutil */}
+        <nav className="hidden gap-6 font-medium text-neutral-500 sm:flex">
+          <Link to="/" className="hover:text-emerald-800 transition-colors">Inicio</Link>
+          <Link to="/catalogo" className="hover:text-emerald-800 transition-colors">Catálogo</Link>
+          <Link to="/opiniones" className="hover:text-emerald-800 transition-colors">Opiniones</Link>
         </nav>
       </div>
 
-      {/* Contenedor Derecho: Dinámico (Login vs Saludo) y Carrito */}
+      {/* Contenedor Derecho: Dinámico (Login vs Saludo) y Carrito (Intacto) */}
       <div className="flex items-center gap-4">
         {usuario ? (
-          // Si está logueado: Muestra saludo y botón de salir
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-sm font-medium text-neutral-800 bg-neutral-100 px-3 py-1.5 rounded-full">
               <User className="h-4 w-4 text-emerald-800" />
@@ -126,7 +102,6 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          // Si NO está logueado: Muestra el botón de Ingresar clásico
           <Link to="/login">
             <Button variant="outline" size="sm" className="rounded-full border-neutral-300 hover:bg-neutral-100">
               Ingresar
@@ -138,12 +113,12 @@ export default function Navbar() {
         <Link to="/carrito" aria-label="Ver carrito">
           <button
             type="button"
-            className="rounded-full border border-neutral-200 p-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center justify-center relative"
+            className="relative flex items-center justify-center rounded-full border border-neutral-200 p-2.5 text-neutral-700 transition-colors hover:bg-neutral-50"
           >
             <ShoppingBag className="h-4 w-4" />
             
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-800 text-[10px] font-bold text-white shadow-xs">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-800 text-[10px] font-bold text-white shadow-xs">
                 {totalItems}
               </span>
             )}

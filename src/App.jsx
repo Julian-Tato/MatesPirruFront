@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google"; // <--- Importamos el proveedor
+//import { GoogleOAuthProvider } from "@react-oauth/google"; // <--- Importamos el proveedor
 import Navbar from "./components/layout/Navbar";
 import InicioPage from "./pages/InicioPage";
 import CatalogoPage from "./pages/CatalogoPage";
@@ -11,7 +11,7 @@ import CartToast from "@/components/carrito/CartToast";
 export default function App() {
   return (
     /* Reemplazá el ID de abajo por el real de Google Cloud cuando lo tengan con Tato */
-    <GoogleOAuthProvider clientId="TU_CLIENT_ID_DE_GOOGLE.apps.googleusercontent.com">
+    //<GoogleOAuthProvider clientId="TU_CLIENT_ID_DE_GOOGLE.apps.googleusercontent.com">
       <BrowserRouter>
         <div className="min-h-screen bg-neutral-50 relative">
           <Navbar />
@@ -29,6 +29,6 @@ export default function App() {
           <CartToast />
         </div>
       </BrowserRouter>
-    </GoogleOAuthProvider>
+    //</GoogleOAuthProvider>
   );
 }

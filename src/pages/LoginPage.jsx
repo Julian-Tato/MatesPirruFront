@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+//import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -47,7 +47,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
+/*
   const manejarGoogleLogin = async (credentialResponse) => {
     setError("");
     setLoading(true);
@@ -82,7 +82,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
+*/
   return (
     <div className="mx-auto mt-8 max-w-[420px] rounded-xl border border-neutral-200 bg-white p-8 shadow-sm">
       <div className="mb-8 text-center">
@@ -153,6 +153,7 @@ export default function LoginPage() {
         </div>
       </div>
 
+      {/* 
       <div className="flex w-full justify-center">
         <GoogleLogin
           onSuccess={manejarGoogleLogin}
@@ -162,6 +163,7 @@ export default function LoginPage() {
           width="100%"
         />
       </div>
+      */}
 
       <p className="mt-8 text-center text-sm text-neutral-500">
         ¿No tenés cuenta?{" "}

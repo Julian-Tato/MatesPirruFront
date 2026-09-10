@@ -1,5 +1,4 @@
 import { useProductos } from "../hooks/useProductos";
-import Navbar from "../components/layout/Navbar";
 import PageHeader from "../components/catalogo/PageHeader";
 import FilterBar from "../components/catalogo/FilterBar";
 import ProductGrid from "../components/catalogo/ProductGrid";
@@ -19,17 +18,19 @@ export default function CatalogoPage({ esAdmin = false }) {
     setOrden,
   } = useProductos();
 
-  // Función simplificada: delega toda la lógica limpia a la librería utils
   const handleAgregarCarrito = (producto) => {
     agregarAlCarrito(producto);
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#F7F4EE] py-12">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-        
-        <PageHeader cantidad={productos.length} />
-        
+    // Usamos pb-12 en vez de py-12 para que el encabezado arranque pegado al Navbar sin huecos arriba
+    <div className="w-full min-h-screen bg-[#94FF68] pb-12">
+
+      {/* El PageHeader ahora está AFUERA del contenedor centrado para expandirse a los bordes */}
+      <PageHeader cantidad={productos.length} />
+      
+      {/* Contenedor central (max-w-7xl) exclusivo para alinear los filtros y la grilla */}
+      <div className="mx-auto mt-8 max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
         <FilterBar
           categorias={categorias}
           categoriaActiva={categoriaActiva}
