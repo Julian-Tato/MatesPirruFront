@@ -1,41 +1,37 @@
-import { Star, Eye } from "lucide-react";
+import { Star, Camera } from "lucide-react";
 
 export default function OpinionCard({ opinion, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className="group cursor-pointer rounded-2xl border border-neutral-200 bg-white p-6 shadow-xs transition-all hover:border-emerald-800 hover:shadow-md"
+      className="rounded-3xl border border-emerald-900/40 bg-[#131f17]/85 p-6 shadow-xl backdrop-blur-md cursor-pointer transition-all hover:border-emerald-700/60"
     >
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-neutral-900 flex items-center gap-2">
-          {opinion.nombre}
-          <span className="text-xs font-normal text-emerald-800 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            <Eye className="h-3.5 w-3.5" /> Ver detalle
-          </span>
-        </h3>
-        <span className="text-xs text-neutral-400">{opinion.fecha}</span>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-serif text-base font-bold text-white">{opinion.nombre}</h3>
+        <span className="text-xs text-emerald-400/80">{opinion.fecha || "Reciente"}</span>
       </div>
 
-      <div className="mt-1 flex items-center gap-1">
+      {/* Estrellas */}
+      <div className="flex gap-1 text-[#d4af37] mb-3">
         {[...Array(5)].map((_, i) => (
           <Star 
             key={i} 
-            className={`h-4 w-4 ${i < opinion.rating ? "fill-amber-400 text-amber-400" : "text-neutral-200"}`} 
+            className={`h-4 w-4 ${i < opinion.rating ? "fill-[#d4af37]" : "text-neutral-600"}`} 
           />
         ))}
       </div>
 
-      <p className="mt-3 text-sm text-neutral-600 leading-relaxed line-clamp-2">
-        "{opinion.comentario}"
-      </p>
+      <p className="text-sm text-emerald-100/90 italic mb-4">"{opinion.comentario}"</p>
 
       {opinion.imagen && (
-        <div className="mt-4 flex items-center gap-3">
-          <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
-            <img src={opinion.imagen} alt="Foto del cliente" className="h-full w-full object-cover" />
-          </div>
-          <span className="text-xs font-medium text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full">
-            Incluye foto real 📸
+        <div className="flex items-center gap-3">
+          <img 
+            src={opinion.imagen} 
+            alt="Foto de opinión" 
+            className="h-16 w-16 rounded-xl object-cover border border-emerald-900/50 shadow-sm" 
+          />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-950 text-emerald-300 border border-emerald-800/50">
+            <Camera className="h-3.5 w-3.5 text-[#d4af37]" /> Incluye foto real
           </span>
         </div>
       )}

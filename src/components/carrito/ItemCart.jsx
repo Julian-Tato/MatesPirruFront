@@ -1,38 +1,36 @@
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-export default function ItemCart({ item, onAumentar, onDisminuir, onEliminar }) {
+export default function ItemCart({ item, onRemove }) {
+  const nombreItem = item.nombre || item.name || "Mate artesanal";
+  const precioItem = Number(item.precio || item.price || 0);
+  const cantidadItem = Number(item.quantity || item.cantidad || 1);
+  const tipoItem = item.tipo || item.material || item.categoria;
+  const imagenItem = item.imagen || item.img || item.image || "/placeholder.jpg";
+
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <img 
-          src={item.image} 
-          alt={item.name} 
-          className="h-20 w-20 rounded-xl object-cover border border-neutral-100" 
-        />
-        <div>
-          <h3 className="font-semibold text-neutral-900">{item.name}</h3>
-          <p className="text-xs text-neutral-500 mt-1 max-w-xs">{item.details}</p>
-        </div>
+    <div className="flex items-center gap-3 py-2 border-b border-emerald-900/30">
+      <img 
+        src={imagenItem} 
+        alt={nombreItem} 
+        className="h-14 w-14 rounded-xl object-cover border border-emerald-900/50" 
+      />
+      <div className="flex-1">
+        <h4 className="text-xs font-semibold text-white">{nombreItem}</h4>
+        {tipoItem && <p className="text-[10px] text-emerald-400">Tipo: {tipoItem}</p>}
+        <p className="text-[10px] text-emerald-200/70">Cant: {cantidadItem}</p>
       </div>
-
-      <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-        <div className="flex items-center rounded-xl border border-neutral-200 bg-neutral-50 p-1">
-          <button onClick={() => onDisminuir(item.id)} className="rounded-lg p-1 text-neutral-600 hover:bg-white">
-            <Minus className="h-4 w-4" />
-          </button>
-          <span className="w-8 text-center text-sm font-medium text-neutral-900">{item.quantity}</span>
-          <button onClick={() => onAumentar(item.id)} className="rounded-lg p-1 text-neutral-600 hover:bg-white">
-            <Plus className="h-4 w-4" />
-          </button>
-        </div>
-
-        <span className="font-semibold text-neutral-900 min-w-[90px] text-right">
-          ${(item.price * item.quantity).toLocaleString('es-AR')}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-emerald-300">
+          ${(precioItem * cantidadItem).toLocaleString()}
         </span>
-
-        <button onClick={() => onEliminar(item.id)} className="rounded-lg p-2 text-neutral-400 hover:bg-red-50 hover:text-red-600">
-          <Trash2 className="h-5 w-5" />
-        </button>
+        {onRemove && (
+          <button 
+            onClick={() => onRemove(item.id)} 
+            className="text-emerald-500/70 hover:text-red-400 p-1 transition-colors cursor-pointer"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );

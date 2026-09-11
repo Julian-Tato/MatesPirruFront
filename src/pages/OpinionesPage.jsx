@@ -19,10 +19,10 @@ export default function OpinionesPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 md:px-12 relative">
       <div className="mb-12 text-center">
-        <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
+        <h1 className="font-serif text-3xl font-bold tracking-tight text-white md:text-4xl">
           Lo que dicen nuestros materos
         </h1>
-        <p className="mt-2 text-neutral-500">
+        <p className="mt-2 text-emerald-200/70">
           Experiencias reales y fotos de quienes eligen nuestros mates cada día.
         </p>
       </div>
