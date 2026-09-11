@@ -6,6 +6,8 @@ import LoginPage from "./pages/LoginPage";
 import RegistroPage from "./pages/RegistroPage";
 import CarritoPage from "@/pages/CarritoPage";
 import CartToast from "@/components/carrito/CartToast";
+import OpinionesPage from "./pages/OpinionesPage";
+
 
 export default function App() {
   return (
@@ -45,6 +47,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegistroPage />} />
               <Route path="/carrito" element={<CarritoPage />} />
+              <Route path="/opiniones" element={<OpinionesPage />} />
             </Routes>
           </main>
 
