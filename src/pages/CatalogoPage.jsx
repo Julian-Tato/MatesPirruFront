@@ -24,7 +24,7 @@ export default function CatalogoPage({ esAdmin = false }) {
 
   return (
     // Usamos pb-12 en vez de py-12 para que el encabezado arranque pegado al Navbar sin huecos arriba
-    <div className="w-full min-h-screen bg-[#94FF68] pb-12">
+    <div className="w-full min-h-screen bg-[#f9f8f4] pb-12">
 
       {/* El PageHeader ahora está AFUERA del contenedor centrado para expandirse a los bordes */}
       <PageHeader cantidad={productos.length} />

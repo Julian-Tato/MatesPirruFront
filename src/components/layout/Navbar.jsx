@@ -18,7 +18,7 @@ export default function Navbar() {
     if (token && datosUsuario) {
       try {
         const parsed = JSON.parse(datosUsuario);
-        setUsuario(parsed.nombre || parsed.email || "Cliente");
+        setUsuario(parsed.usuarioLogueado || parsed.nombreApellido || parsed.email || "Cliente");
       } catch {
         setUsuario("Cliente");
       }
@@ -63,7 +63,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-emerald-900/30 bg-[#0f1711]/80 px-8 py-4 shadow-sm backdrop-blur-md sticky top-0 z-50">
+      <header className="flex items-center justify-between border-b border-white/20 bg-[#0f1711] px-8 py-4 shadow-sm backdrop-blur-md sticky top-0 z-50">
         
         {/* Contenedor Izquierdo: Logo y Opciones */}
         <div className="flex items-center gap-10">

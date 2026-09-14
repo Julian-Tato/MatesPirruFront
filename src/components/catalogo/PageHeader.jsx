@@ -1,26 +1,22 @@
 export default function PageHeader({ cantidad }) {
   return (
-    // Fondo que ocupa el 100% del ancho con un borde inferior muy sutil para separarlo del catálogo
-    <div className="w-full border-b border-stone-200/60 bg-amber-50/70 py-12 md:py-16">
+    <div className="relative pt-24 pb-32 px-6 z-10 bg-[#0f1711] rounded-b-[3rem] shadow-xl overflow-hidden">
       
-      {/* Contenedor interno idéntico al de la grilla (max-w-7xl) para que todo quede en la misma línea imaginaria */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        {/* Insignia calcada del Inicio */}
-        <span className="mb-4 inline-block rounded-full border border-[#F3E5D8] bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-800 shadow-sm md:text-sm">
-          Tienda online
+      {/* Brillos abstractos estilo Dark Mode que se funden con el fondo */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-20 blur-[100px] bg-emerald-700 mix-blend-screen pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full opacity-10 blur-[120px] bg-[#d4af37] mix-blend-screen pointer-events-none" />
+
+      {/* Contenedor centralizado con los textos */}
+      <div className="mx-auto flex max-w-7xl flex-col items-center text-center relative z-10">
+        <span className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#d4af37]">
+          Colección Mates Pirru
         </span>
-        
-        {/* Título calcado del Inicio */}
-        <h1 className="mb-4 font-serif text-3xl font-bold leading-[1.15] tracking-tight text-stone-900 sm:text-4xl md:text-5xl">
+        <h1 className="mb-4 text-5xl font-semibold leading-tight text-white md:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
           Catálogo de Productos
         </h1>
-        
-        {/* Párrafo calcado del Inicio */}
-        <p className="text-lg font-normal leading-relaxed text-stone-600 md:text-xl">
-          {cantidad} productos disponibles
+        <p className="max-w-2xl text-lg font-light text-emerald-200/80">
+          Explorá nuestra selección de {cantidad} piezas únicas, donde la tradición del buen mate se encuentra con el diseño contemporáneo.
         </p>
-        
       </div>
     </div>
   );
