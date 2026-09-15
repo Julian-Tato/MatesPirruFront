@@ -7,6 +7,7 @@ import RegistroPage from "./pages/RegistroPage";
 import CarritoPage from "@/pages/CarritoPage";
 import CartToast from "@/components/carrito/CartToast";
 import OpinionesPage from "./pages/OpinionesPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
               <Route path="/registro" element={<RegistroPage />} />
               <Route path="/carrito" element={<CarritoPage />} />
               <Route path="/opiniones" element={<OpinionesPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
 

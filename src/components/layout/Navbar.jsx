@@ -5,12 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import logoPirru from '@/assets/img/Logo-Matespirru.png';
 import CartDrawer from "@/components/carrito/CartDrawer"; // 1. Importamos el CartDrawer
 
+
 export default function Navbar() {
   const [totalItems, setTotalItems] = useState(0);
   const [usuario, setUsuario] = useState(null);
+  const [rolUsuario, setRolUsuario] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false); // 2. Estado para abrir/cerrar el panel lateral
   const navigate = useNavigate();
-
   const verificarSesion = () => {
     const token = localStorage.getItem("token");
     const datosUsuario = localStorage.getItem("usuario");
@@ -19,6 +20,7 @@ export default function Navbar() {
       try {
         const parsed = JSON.parse(datosUsuario);
         setUsuario(parsed.usuarioLogueado || parsed.nombreApellido || parsed.email || "Cliente");
+        setRolUsuario(parsed.rol);
       } catch {
         setUsuario("Cliente");
       }
@@ -57,6 +59,7 @@ export default function Navbar() {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
     setUsuario(null);
+    setRolUsuario(null);
     window.dispatchEvent(new CustomEvent("user-logged-in"));
     navigate("/");
   };
@@ -84,6 +87,13 @@ export default function Navbar() {
             <Link to="/" className="hover:text-emerald-400 transition-colors">Inicio</Link>
             <Link to="/catalogo" className="hover:text-emerald-400 transition-colors">Catálogo</Link>
             <Link to="/opiniones" className="hover:text-emerald-400 transition-colors">Opiniones</Link>
+            {(rolUsuario === 1 || rolUsuario === 'Admin') && (
+              <Link 
+                to="/admin" className="hover:text-emerald-400 transition-colors"
+              >
+                Panel Admin
+              </Link>
+            )}
           </nav>
         </div>
 
