@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-// Recibimos la prop 'categorias' que nos mandará el Dashboard
 export default function ProductFormModal({ isOpen, onClose, producto, categorias = [] }) {
+  // 1. Ampliamos el estado inicial para incluir modelo y material
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
     precio: "",
     stock: "",
     urlImagen: "",
-    idCategoria: "" // Usamos el ID numérico que exige tu base de datos
+    idCategoria: "",
+    modelo: "",
+    material: ""
   });
 
+  const [guardando, setGuardando] = useState(false);
+
+  // 2. Rellenamos los campos extra si estamos editando
   useEffect(() => {
     if (producto) {
       setFormData({
@@ -20,24 +25,72 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
         precio: producto.precio || "",
         stock: producto.stock || "",
         urlImagen: producto.urlImagen || "",
-        // Atrapamos el IdCategoria real del mate
-        idCategoria: producto.idCategoria || producto.categoria?.id || "" 
+        idCategoria: producto.idCategoria || producto.categoria?.id || "",
+        modelo: producto.modelo || "",
+        material: producto.material || ""
       });
     } else {
-      setFormData({ nombre: "", descripcion: "", precio: "", stock: "", urlImagen: "", idCategoria: "" });
+      setFormData({ 
+        nombre: "", descripcion: "", precio: "", stock: "", 
+        urlImagen: "", idCategoria: "", modelo: "", material: "" 
+      });
     }
   }, [producto, isOpen]);
 
   const handleChange = (e) => {
-    // Si el input es el select de categoría, convertimos el valor a número
     const value = e.target.name === "idCategoria" ? Number(e.target.value) : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos listos para enviar al backend:", formData);
-    onClose();
+    setGuardando(true);
+
+    try {
+      const esEdicion = !!producto;
+      const url = esEdicion
+        ? `https://localhost:7045/api/productos/${producto.id}`
+        : "https://localhost:7045/api/productos";
+      const method = esEdicion ? "PUT" : "POST";
+
+      // 3. Ya no hardcodeamos nada, usamos los datos reales del form
+      const payload = {
+        ...formData,
+        precio: Number(formData.precio),
+        stock: Number(formData.stock),
+        idCategoria: Number(formData.idCategoria),
+        activo: true
+      };
+
+      if (esEdicion) {
+        payload.id = producto.id;
+      }
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("El backend rechazó la petición. Revisá los permisos o los datos.");
+      }
+
+      console.log(esEdicion ? "¡Mate actualizado!" : "¡Mate creado!");
+      onClose();
+      window.location.reload();
+
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      alert("Hubo un problema al guardar. Mirá la consola para más detalles.");
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const esEdicion = !!producto;
@@ -64,7 +117,6 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
                 className="w-full rounded-xl border border-[#e8e4db] bg-white px-4 py-2.5 text-sm text-[#2c3e35] focus:border-[#143224] focus:outline-none focus:ring-1 focus:ring-[#143224]" />
             </div>
 
-            {/* NUEVO CAMPO: Select de Categoría */}
             <div className="sm:col-span-2">
               <label className="mb-2 block text-sm font-medium text-[#143224]">Categoría</label>
               <select 
@@ -75,13 +127,25 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
                 className="w-full cursor-pointer rounded-xl border border-[#e8e4db] bg-white px-4 py-2.5 text-sm text-[#2c3e35] focus:border-[#143224] focus:outline-none focus:ring-1 focus:ring-[#143224]"
               >
                 <option value="" disabled>Seleccioná una categoría...</option>
-                {/* Mapeamos las categorías reales de la base de datos */}
                 {categorias.map(cat => (
                   <option key={cat.id} value={cat.id}>
                     {cat.descripcion}
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* NUEVOS CAMPOS: Modelo y Material */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-[#143224]">Modelo</label>
+              <input type="text" name="modelo" value={formData.modelo} onChange={handleChange} required placeholder="Ej: Camionero Liso"
+                className="w-full rounded-xl border border-[#e8e4db] bg-white px-4 py-2.5 text-sm text-[#2c3e35] focus:border-[#143224] focus:outline-none focus:ring-1 focus:ring-[#143224]" />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-[#143224]">Material</label>
+              <input type="text" name="material" value={formData.material} onChange={handleChange} required placeholder="Ej: Madera de Algarrobo"
+                className="w-full rounded-xl border border-[#e8e4db] bg-white px-4 py-2.5 text-sm text-[#2c3e35] focus:border-[#143224] focus:outline-none focus:ring-1 focus:ring-[#143224]" />
             </div>
 
             <div>
@@ -110,11 +174,11 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
           </div>
 
           <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-[#e8e4db]">
-            <button type="button" onClick={onClose} className="rounded-xl px-5 py-2.5 text-sm font-medium text-[#6b7b71] transition-colors hover:bg-[#e8e4db]">
+            <button type="button" onClick={onClose} disabled={guardando} className="rounded-xl px-5 py-2.5 text-sm font-medium text-[#6b7b71] transition-colors hover:bg-[#e8e4db] disabled:opacity-50">
               Cancelar
             </button>
-            <button type="submit" className="rounded-xl bg-[#143224] px-6 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-[#1a402e]">
-              {esEdicion ? "Guardar Cambios" : "Crear Producto"}
+            <button type="submit" disabled={guardando} className="rounded-xl bg-[#143224] px-6 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-[#1a402e] disabled:opacity-50 disabled:hover:translate-y-0">
+              {guardando ? "Guardando..." : (esEdicion ? "Guardar Cambios" : "Crear Producto")}
             </button>
           </div>
         </form>
