@@ -17,10 +17,10 @@ export default function ProductCard({ producto, esAdmin, onAgregarCarrito, onEdi
         {/* Overlay de gradiente oscuro copiado de Figma para darle profundidad */}
         <div className="absolute inset-0 z-0 mix-blend-multiply bg-gradient-to-tr from-[#0f1711]/80 to-transparent opacity-50" />
         
-        <img
-          src={producto.urlImagen}
-          alt={producto.nombre}
-          className="relative z-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        <img 
+          src={producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes[0].url : "https://placehold.co/600x600/cccccc/000000?text=Sin+Foto"} 
+          alt={producto.nombre} 
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110" 
         />
         
         {/* Sombra al hacer hover */}

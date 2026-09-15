@@ -218,7 +218,11 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
                             <div className={`w-12 h-12 rounded-xl overflow-hidden bg-[#f4f1ea] border border-[#e8e4db] shrink-0 ${!p.activo && 'opacity-50 grayscale'}`}>
-                              <img src={p.urlImagen} alt={p.nombre} className="w-full h-full object-cover mix-blend-multiply" />
+                             <img 
+                              src={p.imagenes && p.imagenes.length > 0 ? p.imagenes[0].url : "https://placehold.co/600x600/cccccc/000000?text=Sin+Foto"} 
+                              alt={p.nombre} 
+                              className="w-full h-full object-cover" 
+                              />
                             </div>
                             <span className={`font-semibold ${p.activo ? 'text-[#143224]' : 'text-neutral-400 line-through'}`}>{p.nombre}</span>
                           </div>

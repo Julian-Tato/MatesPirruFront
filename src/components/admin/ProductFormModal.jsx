@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function ProductFormModal({ isOpen, onClose, producto, categorias = [] }) {
-  // 1. Ampliamos el estado inicial para incluir modelo y material
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -16,15 +15,21 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
 
   const [guardando, setGuardando] = useState(false);
 
-  // 2. Rellenamos los campos extra si estamos editando
   useEffect(() => {
     if (producto) {
+      // Intentamos rescatar la imagen desde la nueva lista que armó tu compañero
+      let imagenRescatada = "";
+      if (producto.imagenes && producto.imagenes.length > 0) {
+        // Asumimos que la propiedad en ImagenProducto se llama "url" o "urlImagen"
+        imagenRescatada = producto.imagenes[0].url || producto.imagenes[0].urlImagen || "";
+      }
+
       setFormData({
         nombre: producto.nombre || "",
         descripcion: producto.descripcion || "",
         precio: producto.precio || "",
         stock: producto.stock || "",
-        urlImagen: producto.urlImagen || "",
+        urlImagen: imagenRescatada, // Le pasamos la imagen rescatada al input visual
         idCategoria: producto.idCategoria || producto.categoria?.id || "",
         modelo: producto.modelo || "",
         material: producto.material || ""
@@ -53,13 +58,20 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
         : "https://localhost:7045/api/productos";
       const method = esEdicion ? "PUT" : "POST";
 
-      // 3. Ya no hardcodeamos nada, usamos los datos reales del form
+      // EL TRUCO MAGICO: Armamos el paquete exactamente como lo pide C#
       const payload = {
-        ...formData,
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
         precio: Number(formData.precio),
         stock: Number(formData.stock),
         idCategoria: Number(formData.idCategoria),
-        activo: true
+        modelo: formData.modelo,
+        material: formData.material,
+        activo: true,
+        // Convertimos el link de texto en una Lista de Objetos
+        imagenes: formData.urlImagen ? [
+          { url: formData.urlImagen } // OJO: Si tu compañero le puso "UrlImagen" a la propiedad en C#, cambialo acá
+        ] : []
       };
 
       if (esEdicion) {
@@ -78,7 +90,7 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
       });
 
       if (!response.ok) {
-        throw new Error("El backend rechazó la petición. Revisá los permisos o los datos.");
+        throw new Error("El backend rechazó la petición.");
       }
 
       console.log(esEdicion ? "¡Mate actualizado!" : "¡Mate creado!");
@@ -135,7 +147,6 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
               </select>
             </div>
 
-            {/* NUEVOS CAMPOS: Modelo y Material */}
             <div>
               <label className="mb-2 block text-sm font-medium text-[#143224]">Modelo</label>
               <input type="text" name="modelo" value={formData.modelo} onChange={handleChange} required placeholder="Ej: Camionero Liso"
