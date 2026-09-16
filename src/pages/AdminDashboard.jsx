@@ -16,13 +16,33 @@ export default function AdminDashboard() {
       .catch(err => console.error("Error trayendo categorías:", err));
 
     // Buscar Productos (El '?activo=' vacío fuerza al backend a traer absolutamente todo)
-    fetch("https://localhost:7045/api/productos?activo=")
-      .then(res => res.json())
+    const token = localStorage.getItem("token");
+    fetch("https://localhost:7045/api/productos/admin", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`Error en la API: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
-        setProductosAdmin(data);
+        // Chequeamos que data sea realmente un array antes de guardarlo
+        if (Array.isArray(data)) {
+          setProductosAdmin(data);
+        } else {
+          setProductosAdmin([]);
+        }
         setLoadingAdmin(false);
       })
-      .catch(err => console.error("Error trayendo productos:", err));
+      .catch(err => {
+        console.error("Error trayendo productos:", err);
+        // CORRECCIÓN ACÁ: Si la API falla, vaciamos la lista y sacamos el "Cargando"
+        // para que el filter() de más abajo no rompa la página.
+        setProductosAdmin([]);
+        setLoadingAdmin(false);
+      });
+      actualizarCatalogo(); // Llamamos a la función para actualizar el catálogo al montar el componente
   }, []);
 
   // 3. Estados de la interfaz
@@ -66,6 +86,30 @@ export default function AdminDashboard() {
     setIsModalOpen(true);
   };
 
+  const actualizarCatalogo = () => {
+    const token = localStorage.getItem("token");
+    fetch("https://localhost:7045/api/productos/admin", {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Error en la API");
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProductosAdmin(data);
+        } else {
+          setProductosAdmin([]);
+        }
+        setLoadingAdmin(false);
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        setProductosAdmin([]);
+        setLoadingAdmin(false);
+      });
+  };
+
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Estás seguro de que querés desactivar este mate?")) return;
     try {
@@ -75,7 +119,7 @@ export default function AdminDashboard() {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (!response.ok) throw new Error("Error al eliminar");
-      window.location.reload();
+      actualizarCatalogo();
     } catch (error) {
       console.error(error);
       alert("Hubo un problema al intentar desactivar el mate.");
@@ -100,7 +144,7 @@ export default function AdminDashboard() {
       });
 
       if (!response.ok) throw new Error("Error al restaurar");
-      window.location.reload();
+      actualizarCatalogo();
     } catch (error) {
       console.error(error);
       alert("Hubo un problema al intentar restaurar el mate.");
@@ -337,6 +381,7 @@ export default function AdminDashboard() {
         onClose={() => setIsModalOpen(false)} 
         producto={productoAEditar} 
         categorias={categoriasReales}
+        onGuardar={actualizarCatalogo}
       />
     </div>
   );
