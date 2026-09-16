@@ -23,13 +23,9 @@ export default function CatalogoPage({ esAdmin = false }) {
   };
 
   return (
-    // Usamos pb-12 en vez de py-12 para que el encabezado arranque pegado al Navbar sin huecos arriba
     <div className="w-full min-h-screen bg-[#f9f8f4] pb-12">
-
-      {/* El PageHeader ahora está AFUERA del contenedor centrado para expandirse a los bordes */}
       <PageHeader cantidad={productos.length} />
       
-      {/* Contenedor central (max-w-7xl) exclusivo para alinear los filtros y la grilla */}
       <div className="mx-auto mt-8 max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
         <FilterBar
           categorias={categorias}

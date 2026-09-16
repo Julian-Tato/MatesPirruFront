@@ -90,7 +90,10 @@ export default function ProductCard({ producto, esAdmin, onAgregarCarrito, onEdi
           ) : (
             <Button
               size="sm"
-              onClick={(e) => { e.stopPropagation(); onAgregarCarrito?.(producto); }}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onSeleccionar?.(producto); // 👈 Ahora abre el modal en lugar de agregar directo
+              }}
               className="h-10 rounded-full border border-emerald-800/50 bg-[#1a2e21] px-5 text-sm font-semibold text-[#d4af37] shadow-md transition-all duration-300 hover:bg-[#d4af37] hover:text-[#0f1711] hover:shadow-[0_4px_15px_rgba(212,175,55,0.3)] active:scale-95"
             >
               + Agregar

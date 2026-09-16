@@ -3,18 +3,22 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { obtenerProductos } from '@/services/productosService';
 import ProductCard from "@/components/catalogo/ProductCard";
+import ProductDetailModal from "@/components/catalogo/ProductDetailModal"; // 👈 1. Importamos el modal
 import { agregarAlCarrito } from "@/lib/utils";
 
 export default function MatesDestacados() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // 👈 2. Agregamos el estado para el modal en el inicio
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+
   const carruselRef = useRef(null);
 
   useEffect(() => {
     async function cargarDestacados() {
       try {
         const todosLosProductos = await obtenerProductos();
-        // Traemos más de 4 para poder scrollear
         setProductos(todosLosProductos.slice(0, 8));
       } catch (error) {
         console.error("Error cargando destacados:", error);
@@ -83,19 +87,18 @@ export default function MatesDestacados() {
           {/* Carrusel */}
           <div 
             ref={carruselRef} 
-            // items-stretch fuerza a que todas las tarjetas tengan el mismo alto
             className="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 items-stretch [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
           >
             {productos.map((item) => (
               <div 
                 key={item.id || item.idMate} 
-                // Esta línea clona visualmente la grilla: 1 columna en celu, 2 en tablet, 4 en desktop exactas.
                 className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(25%-24px)] flex-none snap-start"
               >
                 <ProductCard 
                   producto={item} 
                   esAdmin={false} 
                   onAgregarCarrito={handleAgregarCarrito}
+                  onSeleccionar={(prod) => setProductoSeleccionado(prod)} // 👈 3. Conectamos la selección para abrir el modal
                 />
               </div>
             ))}
@@ -112,6 +115,14 @@ export default function MatesDestacados() {
 
         </div>
       </div>
+
+      {/* 👈 4. Renderizamos el modal de detalle también en el inicio */}
+      <ProductDetailModal 
+        producto={productoSeleccionado} 
+        isOpen={!!productoSeleccionado} 
+        onClose={() => setProductoSeleccionado(null)}
+        onAgregarCarrito={handleAgregarCarrito}
+      />
     </section>
   );
 }
