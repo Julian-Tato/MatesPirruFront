@@ -1,59 +1,84 @@
 import { useState, useEffect } from "react";
+// Importamos el modal que armamos recién (ajustá la ruta si está en otra carpeta)
+import OrderDetailModal from "./OrderDetailModal"; 
 
 export default function PedidosTab() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // 1. Estado para controlar qué pedido se está viendo en el modal
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
+
+  // Extraemos la llamada a la API a una función para poder reutilizarla al actualizar estados
+  const fetchPedidos = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("https://localhost:7045/api/pedidos/admin", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Error al obtener los pedidos");
+      
+      const data = await response.json();
+      setPedidos(data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPedidos = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        
-        const response = await fetch("https://localhost:7045/api/pedidos/admin", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) throw new Error("Error al obtener los pedidos");
-        
-        const data = await response.json();
-        setPedidos(data);
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPedidos();
   }, []);
 
-  // 1. Convertimos el número que viene de C# a un texto amigable para el cliente
+  // 2. Función que recibe el modal para actualizar el estado en C#
+  const handleUpdateStatus = async (pedidoId, nuevoEstado) => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      // Asumiendo que tenés una ruta PUT para cambiar el estado. 
+      // Si la URL es distinta en tu backend, ajustala acá:
+      const response = await fetch(`https://localhost:7045/api/pedidos/${pedidoId}/estado`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(nuevoEstado) // Mandamos el número del enum (0, 1, 2...)
+      });
+
+      if (!response.ok) throw new Error("Error al actualizar el estado");
+
+      // Refrescamos la tabla para ver el nuevo color y estado
+      fetchPedidos();
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      alert("Hubo un problema al actualizar el estado del pedido.");
+    }
+  };
+
+  // Convertimos el número que viene de C# a un texto amigable
   const getEstadoNombre = (estado) => {
-    const estados = {
-      0: "Pendiente de Pago",
-      1: "Pagado",
-      2: "Enviado",
-      3: "Entregado",
-      4: "Cancelado"
-    };
+    const estados = { 0: "Pendiente de Pago", 1: "Pagado", 2: "Enviado", 3: "Entregado", 4: "Cancelado" };
     return estados[estado] || "Desconocido";
   };
 
-  // 2. Evaluamos los colores basándonos en el número (0 a 4) que devuelve la API
+  // Evaluamos los colores basándonos en el número (0 a 4)
   const getOrderStatusColor = (estado) => {
     switch (estado) {
-      case 1: // Pagado
-      case 3: return "bg-emerald-100 text-emerald-800 border-emerald-200"; // Entregado
-      case 0: return "bg-amber-100 text-amber-800 border-amber-200"; // PendientePago
-      case 2: return "bg-blue-100 text-blue-800 border-blue-200"; // Enviado
-      case 4: return "bg-red-100 text-red-800 border-red-200"; // Cancelado
+      case 1: 
+      case 3: return "bg-emerald-100 text-emerald-800 border-emerald-200"; 
+      case 0: return "bg-amber-100 text-amber-800 border-amber-200"; 
+      case 2: return "bg-blue-100 text-blue-800 border-blue-200"; 
+      case 4: return "bg-red-100 text-red-800 border-red-200"; 
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
-  // 3. Forzamos el formato de fecha clásico (dd/mm/aaaa) usando 2-digit en el mes
+  // Forzamos el formato de fecha clásico (dd/mm/aaaa)
   const formatearFecha = (fechaString) => {
     const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Date(fechaString).toLocaleDateString('es-AR', opciones);
@@ -104,13 +129,16 @@ export default function PedidosTab() {
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-[#2c3e35]">${o.total.toLocaleString("es-AR")}</td>
                     <td className="px-6 py-4" >
-                      {/* Dibujamos el color leyendo el número y pintamos el nombre leyendo el mapa de textos */}
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getOrderStatusColor(o.estado)}`}>
                         {getEstadoNombre(o.estado)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-sm font-medium text-[#d4af37] hover:text-[#b08e26] transition-colors">
+                      {/* 3. El botón ahora inyecta el objeto 'o' (pedido completo) en el estado */}
+                      <button 
+                        onClick={() => setPedidoSeleccionado(o)}
+                        className="text-sm font-medium text-[#d4af37] hover:text-[#b08e26] transition-colors"
+                      >
                         Ver Detalle
                       </button>
                     </td>
@@ -121,6 +149,14 @@ export default function PedidosTab() {
           </table>
         </div>
       </div>
+
+      {/* 4. Renderizamos el Modal pasándole el estado */}
+      <OrderDetailModal 
+        isOpen={!!pedidoSeleccionado} 
+        onClose={() => setPedidoSeleccionado(null)} 
+        pedido={pedidoSeleccionado}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </div>
   );
 }
