@@ -43,12 +43,24 @@ export function useCheckout() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value
+  }));
+};
 
   const handleContinuarAlEnvio = (e) => {
-    e.preventDefault();
-    if (!formData.email || !formData.codigoPostal) return;
+    e.preventDefault(); // Evita que la página se recargue
+
+    // Validamos los 4 campos obligatorios que armamos para el Paso 1
+    if (!formData.nombre || !formData.apellido || !formData.email || !formData.telefono) {
+      setToastMessage("Por favor completá tus datos de contacto.");
+      setTimeout(() => setToastMessage(""), 3000);
+      return;
+    }
+
+    // Si está todo OK, desplegamos el formulario 2
     setPasoEnvioHabilitado(true);
   };
 

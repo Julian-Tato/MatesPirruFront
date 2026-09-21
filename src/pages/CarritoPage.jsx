@@ -1,10 +1,39 @@
 import { ShoppingBag, ArrowLeft, Mail, User, Truck, Store, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/hooks/useCheckout";
-
+import { useEffect, useRef } from "react";
+import { usePlacesWidget } from "react-google-autocomplete";
 import ItemCart from "@/components/carrito/ItemCart";
 import CartSummary from "@/components/carrito/CartSummary";
 import CartToast from "@/components/carrito/CartToast";
+
+export function InputGoogleMaps({ calle, handleChange, handleLlenarDireccion }) {
+  // La librería se encarga de todo el ciclo de vida sin que React colapse
+  const { ref: buscadorRef } = usePlacesWidget({
+    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    onPlaceSelected: handleLlenarDireccion,
+    options: {
+      types: ["address"],
+      componentRestrictions: { country: "ar" },
+    },
+  });
+
+  return (
+    <div className="col-span-2">
+      <label className="block text-xs font-medium text-emerald-200/80">Calle y Número (Buscador Automático)</label>
+      <input
+        ref={buscadorRef}
+        type="text"
+        name="calle"
+        required
+        defaultValue={calle} // <-- LA MAGIA FINAL: Evita que React te robe el foco al tipear
+        onBlur={handleChange}
+        placeholder="Empezá a escribir tu dirección..."
+        className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+      />
+    </div>
+  );
+}
 
 export default function CarritoPage() {
   const {
@@ -21,6 +50,41 @@ export default function CarritoPage() {
     navigate
   } = useCheckout();
 
+  // 1. SIEMPRE LOS HOOKS VAN ACÁ ARRIBA (Antes de cualquier if)
+  const handleLlenarDireccion = (place) => {
+    let calle = "";
+    let numero = "";
+    let cp = "";
+    let localidad = "";
+    let provincia = "";
+
+    place.address_components?.forEach((component) => {
+      const types = component.types;
+      
+      if (types.includes("route")) calle = component.long_name;
+      if (types.includes("street_number")) numero = component.long_name;
+      if (types.includes("postal_code")) cp = component.long_name;
+      
+      // Ampliamos la red para atrapar cualquier formato de barrio/ciudad en Argentina
+      if (types.includes("locality") || types.includes("sublocality") || types.includes("neighborhood") || types.includes("sublocality_level_1")) {
+        if (!localidad) localidad = component.long_name; 
+      }
+      
+      if (types.includes("administrative_area_level_1")) provincia = component.long_name;
+    });
+
+    // Ahora que tu hook usa "prev", estas 5 líneas se van a ejecutar perfecto juntas
+    handleChange({ target: { name: "calle", value: calle } });
+    handleChange({ target: { name: "numero", value: numero } });
+    handleChange({ target: { name: "codigoPostal", value: cp } });
+    handleChange({ target: { name: "barrio", value: localidad } });
+    handleChange({ target: { name: "ciudad", value: provincia } });
+  };
+
+ 
+
+
+  // 2. RECIÉN AHORA PONEMOS LOS RETORNOS CONDICIONALES
   if (compraFinalizada) {
     return (
       <div className="mx-auto max-w-xl px-6 py-20 text-center text-white">
@@ -51,6 +115,7 @@ export default function CarritoPage() {
     );
   }
 
+  // 3. RETORNO PRINCIPAL DE LA PÁGINA
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 md:px-12 relative text-white">
       <CartToast message={toastMessage} />
@@ -67,92 +132,75 @@ export default function CarritoPage() {
         {/* IZQUIERDA: Formularios */}
         <div className="lg:col-span-7 space-y-6">
           
-          {/* PASO 1 */}
+          {/* PASO 1: Contacto */}
           <div className="rounded-2xl border border-emerald-900/40 bg-[#131f17]/85 p-6 shadow-xl backdrop-blur-md">
             <h2 className="font-serif text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <Mail className="h-5 w-5 text-emerald-400" /> 1. Contacto y Ubicación
+              <User className="h-5 w-5 text-emerald-400" /> 1. Contacto
             </h2>
             <form onSubmit={handleContinuarAlEnvio} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-emerald-200/80">Correo Electrónico</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  required 
-                  placeholder="tucorreo@email.com" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white placeholder-emerald-700 focus:border-emerald-500 focus:outline-none" 
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-emerald-200/80">Nombre</label>
+                  <input type="text" name="nombre" required value={formData.nombre} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-emerald-200/80">Apellido</label>
+                  <input type="text" name="apellido" required value={formData.apellido} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-emerald-200/80">Código Postal</label>
-                <input 
-                  type="text" 
-                  name="codigoPostal" 
-                  required 
-                  placeholder="Ej. 1646" 
-                  value={formData.codigoPostal} 
-                  onChange={handleChange} 
-                  className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white placeholder-emerald-700 focus:border-emerald-500 focus:outline-none" 
-                />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-emerald-200/80">Correo Electrónico</label>
+                  <input type="email" name="email" required placeholder="tucorreo@email.com" value={formData.email} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white placeholder-emerald-700 focus:outline-none focus:border-emerald-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-emerald-200/80">Teléfono / Celular</label>
+                  <input type="tel" name="telefono" required placeholder="Ej. 11 2345 6789" value={formData.telefono} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white placeholder-emerald-700 focus:outline-none focus:border-emerald-500" />
+                </div>
               </div>
+
               {!pasoEnvioHabilitado && (
-                <Button type="submit" className="w-full rounded-xl bg-emerald-800 py-2.5 text-white hover:bg-emerald-900 text-sm font-medium cursor-pointer border border-emerald-700/50">
+                <Button type="submit" className="w-full mt-4 rounded-xl bg-emerald-800 py-2.5 text-white hover:bg-emerald-900 text-sm font-medium cursor-pointer border border-emerald-700/50">
                   Continuar con los datos de envío
                 </Button>
               )}
             </form>
           </div>
 
-          {/* PASO 2: Solapa Desplegable */}
+          {/* PASO 2: Envío y Pago */}
           {pasoEnvioHabilitado && (
             <div className="rounded-2xl border border-emerald-800/40 bg-[#131f17]/85 p-6 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
               <h2 className="font-serif text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <User className="h-5 w-5 text-emerald-400" /> 2. Datos de Envío y Pago
+                <Truck className="h-5 w-5 text-emerald-400" /> 2. Datos de Envío y Pago
               </h2>
               <form onSubmit={handleFinalizarCompra} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                
+                {/* Autocompletado de Google Maps */}
+                <InputGoogleMaps 
+                  calle={formData.calle} 
+                  handleChange={handleChange} 
+                  handleLlenarDireccion={handleLlenarDireccion} 
+                />
+                <div className="grid grid-cols-2 gap-4 pt-2">
                   <div>
-                    <label className="block text-xs font-medium text-emerald-200/80">Nombre</label>
-                    <input type="text" name="nombre" required value={formData.nombre} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
+                    <label className="block text-xs font-medium text-emerald-200/80">Número / Piso / Depto</label>
+                    <input type="text" name="numero" required value={formData.numero} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-emerald-200/80">Apellido</label>
-                    <input type="text" name="apellido" required value={formData.apellido} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-emerald-200/80">Teléfono / Celular</label>
-                  <input type="tel" name="telefono" required placeholder="Ej. 11 2345 6789" value={formData.telefono} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
-                </div>
-
-                {/* Código postal pre-cargado */}
-                <div>
-                  <label className="block text-xs font-medium text-emerald-200/80">Código Postal (Pre-cargado)</label>
-                  <input type="text" disabled value={formData.codigoPostal} className="mt-1 w-full rounded-xl border border-emerald-900/40 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-400 cursor-not-allowed" />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-2">
-                    <label className="block text-xs font-medium text-emerald-200/80">Calle</label>
-                    <input type="text" name="calle" required value={formData.calle} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-emerald-200/80">Número</label>
-                    <input type="text" name="numero" required value={formData.numero} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
+                    <label className="block text-xs font-medium text-emerald-200/80">Código Postal</label>
+                    <input type="text" name="codigoPostal" required value={formData.codigoPostal} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-emerald-200/80">Barrio / Localidad</label>
-                    <input type="text" name="barrio" required value={formData.barrio} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
+                    <input type="text" name="barrio" required value={formData.barrio} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-emerald-200/80">Ciudad / Provincia</label>
-                    <input type="text" name="ciudad" required value={formData.ciudad} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none" />
+                    <label className="block text-xs font-medium text-emerald-200/80">Provincia</label>
+                    <input type="text" name="ciudad" required value={formData.ciudad} onChange={handleChange} className="mt-1 w-full rounded-xl border border-emerald-900/50 bg-[#0f1711] px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" />
                   </div>
                 </div>
 

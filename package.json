@@ -19,6 +19,8 @@
     "lucide-react": "^1.41.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-google-autocomplete": "^2.7.5",
+    "react-places-autocomplete": "^7.3.0",
     "react-router-dom": "^7.18.3",
     "shadcn": "^4.21.0",
     "tailwindcss": "^4.3.3",
