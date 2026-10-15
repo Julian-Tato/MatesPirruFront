@@ -36,7 +36,8 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
           producto.imagenes.map((img, idx) => ({
             id: img.id?.toString() || Math.random().toString(),
             url: img.url,
-            name: `Imagen guardada ${idx + 1}`
+            name: `Imagen guardada ${idx + 1}`,
+            file: null // No hay archivo físico nuevo en este punto
           }))
         );
       } else {
@@ -57,10 +58,15 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
       reader.onload = (e) => {
         setImages(prev => [
           ...prev,
-          { id: Math.random().toString(36).slice(2), url: e.target?.result, name: file.name }
+          { 
+            id: Math.random().toString(36).slice(2), 
+            url: e.target?.result, 
+            name: file.name,
+            file: file // Guardamos el archivo físico para poder enviarlo en el FormData
+          }
         ]);
       };
-      reader.readAsDataURL(file); // Convierte la imagen a Base64
+      reader.readAsDataURL(file); // Vista previa en Base64
     });
   }, [images.length]);
 
@@ -82,39 +88,68 @@ export default function ProductFormModal({ isOpen, onClose, producto, categorias
       const url = esEdicion
         ? `https://localhost:7045/api/productos/${producto.id}`
         : "https://localhost:7045/api/productos";
-      const method = esEdicion ? "PUT" : "POST";
-
-      // Armamos el paquete mapeando las imágenes de la galería
-      const payload = {
-        nombre: form.nombre,
-        descripcion: form.descripcion,
-        precio: Number(form.precio),
-        stock: Number(form.stock),
-        idCategoria: Number(form.idCategoria),
-        modelo: form.modelo,
-        material: form.material,
-        activo: true,
-        imagenes: images.map(img => ({ url: img.url })) // Mandamos el Array que pide C#
-      };
-
-      if (esEdicion) payload.id = producto.id;
-
+      
       const token = localStorage.getItem("token");
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
+      let response;
+
+      if (esEdicion) {
+        // Si es edición, mantenemos JSON (ya que el PUT usa [FromBody] en tu backend)
+        const payload = {
+          id: producto.id,
+          nombre: form.nombre,
+          descripcion: form.descripcion,
+          precio: Number(form.precio),
+          stock: Number(form.stock),
+          idCategoria: Number(form.idCategoria),
+          modelo: form.modelo,
+          material: form.material,
+          activo: true,
+          imagenes: images.map(img => ({ url: img.url }))
+        };
+
+        response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Si es creación (POST), usamos FormData porque el backend espera multipart/form-data
+        const formData = new FormData();
+        formData.append("Nombre", form.nombre);
+        formData.append("Descripcion", form.descripcion);
+        formData.append("Precio", form.precio);
+        formData.append("Stock", form.stock);
+        formData.append("IdCategoria", form.idCategoria);
+        formData.append("Modelo", form.modelo);
+        formData.append("Material", form.material);
+        formData.append("Activo", "true");
+
+        // Buscamos si el usuario adjuntó un archivo físico para enviarlo como 'imagen'
+        const imagenConArchivo = images.find(img => img.file);
+        if (imagenConArchivo && imagenConArchivo.file) {
+          formData.append("imagen", imagenConArchivo.file);
+        }
+
+        response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`
+            // NOTA: No definimos "Content-Type" aquí. El navegador lo asigna 
+            // automáticamente como multipart/form-data con su respectivo boundary.
+          },
+          body: formData
+        });
+      }
 
       if (!response.ok) throw new Error("El backend rechazó la petición.");
 
       onClose();
       if (onGuardar) {
         onGuardar();
-      } // Recargamos para ver los cambios
+      }
     } catch (error) {
       console.error("Error al guardar:", error);
       alert("Hubo un problema al guardar. Mirá la consola.");
