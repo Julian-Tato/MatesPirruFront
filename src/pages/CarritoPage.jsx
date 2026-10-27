@@ -211,7 +211,7 @@ export default function CarritoPage() {
                     <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${formData.metodoEntrega === 'correo' ? 'border-emerald-500 bg-emerald-950/60' : 'border-emerald-900/50 bg-[#0f1711]'}`}>
                       <input type="radio" name="metodoEntrega" value="correo" checked={formData.metodoEntrega === 'correo'} onChange={handleChange} className="text-emerald-500" />
                       <div className="flex items-center gap-2 text-xs font-medium text-white">
-                        <Truck className="h-4 w-4 text-emerald-400" /> Envío por correo
+                        <Truck className="h-4 w-4 text-emerald-400" /> Envío Coordinado
                       </div>
                     </label>
 
@@ -221,6 +221,10 @@ export default function CarritoPage() {
                         <Store className="h-4 w-4 text-emerald-400" /> Punto de retiro
                       </div>
                     </label>
+                  </div>
+                  {/* Aclaración de coordinación por WhatsApp */}
+                  <div className="mt-3 rounded-xl bg-emerald-950/30 border border-emerald-900/40 px-3 py-2 text-xs text-emerald-200/80">
+                    <span className="text-emerald-400 font-bold">* Importante:</span> Tanto el envío como el punto de retiro se coordinan directamente por <strong className="text-emerald-300">WhatsApp</strong> una vez finalizado el pedido.
                   </div>
                 </div>
 

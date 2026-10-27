@@ -39,8 +39,6 @@ export default function PedidosTab() {
     try {
       const token = localStorage.getItem("token");
       
-      // Asumiendo que tenés una ruta PUT para cambiar el estado. 
-      // Si la URL es distinta en tu backend, ajustala acá:
       const response = await fetch(`https://localhost:7045/api/pedidos/${pedidoId}/estado`, {
         method: "PUT",
         headers: {
@@ -113,44 +111,48 @@ export default function PedidosTab() {
                   <td colSpan="6" className="px-6 py-8 text-center text-[#6b7b71]">No hay pedidos registrados aún.</td>
                 </tr>
               ) : (
-                pedidos.map(o => (
-                  <tr key={o.id} className="hover:bg-[#fcfaf5] transition-colors group">
-                    <td className="px-6 py-4 font-semibold text-[#143224]">#{o.id}</td>
-                    <td className="px-6 py-4 text-sm text-[#6b7b71]">{formatearFecha(o.fecha)}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#e3e8de] text-[#143224] flex items-center justify-center text-xs font-bold uppercase">
-                          {o.usuario?.nombreApellido?.charAt(0) || "C"}
+                pedidos.map(o => {
+                  // --- EXTRACCIÓN INTELIGENTE DEL NOMBRE PARA LA TABLA ---
+                  const nombreClienteFinal = o.nombreCliente || o.usuario?.nombreApellido || "Cliente Invitado";
+
+                  return (
+                    <tr key={o.id} className="hover:bg-[#fcfaf5] transition-colors group">
+                      <td className="px-6 py-4 font-semibold text-[#143224]">#{o.id}</td>
+                      <td className="px-6 py-4 text-sm text-[#6b7b71]">{formatearFecha(o.fecha)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#e3e8de] text-[#143224] flex items-center justify-center text-xs font-bold uppercase">
+                            {nombreClienteFinal.charAt(0)}
+                          </div>
+                          <span className="text-sm font-medium text-[#2c3e35]">
+                            {nombreClienteFinal}
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-[#2c3e35]">
-                          {o.usuario?.nombreApellido || "Cliente Desconocido"}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-[#2c3e35]">${o.total.toLocaleString("es-AR")}</td>
+                      <td className="px-6 py-4" >
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getOrderStatusColor(o.estado)}`}>
+                          {getEstadoNombre(o.estado)}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-[#2c3e35]">${o.total.toLocaleString("es-AR")}</td>
-                    <td className="px-6 py-4" >
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getOrderStatusColor(o.estado)}`}>
-                        {getEstadoNombre(o.estado)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      {/* 3. El botón ahora inyecta el objeto 'o' (pedido completo) en el estado */}
-                      <button 
-                        onClick={() => setPedidoSeleccionado(o)}
-                        className="text-sm font-medium text-[#d4af37] hover:text-[#b08e26] transition-colors"
-                      >
-                        Ver Detalle
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button 
+                          onClick={() => setPedidoSeleccionado(o)}
+                          className="text-sm font-medium text-[#d4af37] hover:text-[#b08e26] transition-colors"
+                        >
+                          Ver Detalle
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* 4. Renderizamos el Modal pasándole el estado */}
+      {/* Renderizamos el Modal pasándole el estado */}
       <OrderDetailModal 
         isOpen={!!pedidoSeleccionado} 
         onClose={() => setPedidoSeleccionado(null)} 

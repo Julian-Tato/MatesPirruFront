@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 export default function OrderDetailModal({ isOpen, onClose, pedido, onUpdateStatus }) {
-  // Manejamos el estado del select usando el número (0 a 4) que corresponde al Enum de C#
   const [newStatus, setNewStatus] = useState(0);
   
   useEffect(() => {
@@ -10,14 +9,13 @@ export default function OrderDetailModal({ isOpen, onClose, pedido, onUpdateStat
 
   if (!isOpen || !pedido) return null;
 
-  // Helpers para traducir el número del Enum a colores y textos
   const getStatusColor = (estado) => {
     switch (estado) {
       case 1: 
-      case 3: return "bg-emerald-100 text-emerald-800 border-emerald-200"; // Pagado, Entregado
-      case 0: return "bg-amber-100 text-amber-800 border-amber-200"; // Pendiente de Pago
-      case 2: return "bg-blue-100 text-blue-800 border-blue-200"; // Enviado
-      case 4: return "bg-red-100 text-red-800 border-red-200"; // Cancelado
+      case 3: return "bg-emerald-100 text-emerald-800 border-emerald-200"; 
+      case 0: return "bg-amber-100 text-amber-800 border-amber-200"; 
+      case 2: return "bg-blue-100 text-blue-800 border-blue-200"; 
+      case 4: return "bg-red-100 text-red-800 border-red-200"; 
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
@@ -27,15 +25,27 @@ export default function OrderDetailModal({ isOpen, onClose, pedido, onUpdateStat
     return estados[estado] || "Desconocido";
   };
 
-  // Cálculos y variables seguras
-  const clientName = pedido.usuario?.nombreApellido || "Cliente Desconocido";
-  const clientEmail = pedido.usuario?.email || `${clientName.toLowerCase().replace(" ", ".")}@email.com`;
+  // --- EXTRACCIÓN INTELIGENTE DE DATOS (Invitado o Usuario Registrado) ---
+  const clientName = pedido.nombreCliente || pedido.usuario?.nombreApellido || "Cliente Invitado";
+  const clientEmail = pedido.emailCliente || pedido.usuario?.email || "Sin email registrado";
+  const clientPhone = pedido.telefonoCliente || "Sin teléfono";
+
+  // Datos de envío y pago
+  const metodoEntregaTexto = pedido.metodoEntrega === "retiro" ? "Punto de Retiro" : "Envío Coordinado";
+  const direccionCompleta = pedido.direccionEnvio ? `${pedido.direccionEnvio}, ${pedido.barrio || ""}, ${pedido.provincia || ""}` : "Retiro en local";
+  
+  let pagoTexto = pedido.medioPago || "No especificado";
+  if (pedido.medioPago === "transferencia") {
+    pagoTexto = `Transferencia Bancaria (Alias/CBU origen: ${pedido.cbuOrigen || "No informado"})`;
+  } else if (pedido.medioPago === "efectivo") {
+    pagoTexto = `Efectivo en local (Abona con: ${pedido.montoEfectivo || "Cambio justo"})`;
+  }
+
   const subtotal = pedido.detalles?.reduce((acc, item) => acc + (item.precioUnitario * item.cantidad), 0) || 0;
   const shipping = pedido.costoEnvio || 0;
   const total = pedido.total || 0;
 
   const handleUpdate = () => {
-    // Solo enviamos la actualización si el administrador realmente cambió el estado en el select
     if (Number(newStatus) !== pedido.estado) {
       onUpdateStatus(pedido.id, Number(newStatus));
     }
@@ -79,26 +89,28 @@ export default function OrderDetailModal({ isOpen, onClose, pedido, onUpdateStat
         <div className="px-8 py-8 flex flex-col gap-8">
           {/* Cards (Cliente y Envío) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Datos del Cliente */}
+            
+            {/* 1. DATOS DEL CLIENTE */}
             <div className="bg-white border border-[#e8e4db] rounded-[12px] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
               <h3 className="text-xs font-semibold text-[#6b7b71] uppercase tracking-wider mb-4">
-                Datos del Cliente
+                Datos de Contacto / Cliente
               </h3>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#f4f1ea] text-[#143224] flex items-center justify-center font-bold text-lg border border-[#e8e4db] uppercase">
                   {clientName.charAt(0)}
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="font-semibold text-[#143224]">{clientName}</p>
-                  <p className="text-sm text-[#6b7b71]">{clientEmail}</p>
+                  <p className="text-sm text-[#6b7b71]">📧 {clientEmail}</p>
+                  <p className="text-sm text-[#6b7b71]">📱 {clientPhone}</p>
                 </div>
               </div>
             </div>
 
-            {/* Datos de Envío */}
+            {/* 2. DATOS DE ENVÍO Y PAGO */}
             <div className="bg-white border border-[#e8e4db] rounded-[12px] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
               <h3 className="text-xs font-semibold text-[#6b7b71] uppercase tracking-wider mb-4">
-                Datos de Envío
+                Método y Entrega
               </h3>
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#f4f1ea] text-[#6b7b71] flex items-center justify-center border border-[#e8e4db] shrink-0">
@@ -107,12 +119,17 @@ export default function OrderDetailModal({ isOpen, onClose, pedido, onUpdateStat
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
                 </div>
-                <div>
-                  <p className="font-semibold text-[#143224]">{pedido.direccionEnvio || "Retiro en local"}</p>
-                  <p className="text-sm text-[#6b7b71]">Datos extra del envío si los hay</p>
+                <div className="space-y-1 text-sm">
+                  <p className="font-semibold text-[#143224]">🚚 {metodoEntregaTexto}</p>
+                  <p className="text-[#6b7b71]"><strong className="text-[#143224]">Dirección:</strong> {direccionCompleta}</p>
+                  {pedido.codigoPostal && <p className="text-[#6b7b71]"><strong className="text-[#143224]">CP:</strong> {pedido.codigoPostal}</p>}
+                  <p className="text-[#6b7b71] pt-1 border-t border-[#e8e4db] mt-1">
+                    <strong className="text-[#143224]">Pago:</strong> {pagoTexto}
+                  </p>
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Lista de Productos */}
