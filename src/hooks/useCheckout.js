@@ -127,6 +127,14 @@ export function useCheckout() {
       window.dispatchEvent(new CustomEvent("cart-updated"));
       setCompraFinalizada(true);
 
+      if (formData.medioPago === "mercadopago" && data.urlMercadoPago) {
+        // Lo mandamos a poner la tarjeta
+        window.location.href = data.urlMercadoPago;
+      } else {
+        // Le mostramos el check verde porque arregló por transferencia/efectivo
+        setCompraFinalizada(true);
+      }
+
     } catch (error) {
       console.error("Error al crear el pedido:", error);
       mostrarAlerta(error.message || "Error de conexión con el servidor.");
